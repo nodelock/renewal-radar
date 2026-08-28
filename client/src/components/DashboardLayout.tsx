@@ -1,11 +1,5 @@
 import { useAuth } from "@/_core/hooks/useAuth";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Sidebar,
   SidebarContent,
@@ -37,6 +31,16 @@ const SIDEBAR_WIDTH_KEY = "sidebar-width";
 const DEFAULT_WIDTH = 280;
 const MIN_WIDTH = 200;
 const MAX_WIDTH = 480;
+
+// user.openId looks like "github:207698090" — extract the numeric GitHub
+// account id and build the public avatar URL. Returns undefined when the
+// openId shape is unexpected so the Avatar falls back to the initial.
+function githubAvatarUrl(openId?: string | null): string | undefined {
+  if (!openId) return undefined;
+  const match = /^github:(\d+)$/.exec(openId);
+  if (!match) return undefined;
+  return `https://avatars.githubusercontent.com/u/${match[1]}?v=4&s=96`;
+}
 
 export default function DashboardLayout({
   children,
@@ -202,34 +206,33 @@ function DashboardLayoutContent({
           </SidebarContent>
 
           <SidebarFooter className="p-3">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-3 rounded-lg px-1 py-1 hover:bg-accent/50 transition-colors w-full text-left group-data-[collapsible=icon]:justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-                  <Avatar className="h-9 w-9 border shrink-0">
-                    <AvatarFallback className="text-xs font-medium">
-                      {user?.name?.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0 group-data-[collapsible=icon]:hidden">
-                    <p className="text-sm font-medium truncate leading-none">
-                      {user?.name || "-"}
-                    </p>
-                    <p className="text-xs text-muted-foreground truncate mt-1.5">
-                      {user?.email || "-"}
-                    </p>
-                  </div>
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem
-                  onClick={logout}
-                  className="cursor-pointer text-destructive focus:text-destructive"
-                >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Sign out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div className="flex items-center gap-3 rounded-lg px-1 py-1">
+              <Avatar className="h-9 w-9 border shrink-0">
+                <AvatarImage
+                  src={githubAvatarUrl(user?.openId)}
+                  alt={user?.name || "User avatar"}
+                />
+                <AvatarFallback className="text-xs font-medium">
+                  {user?.name?.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0 group-data-[collapsible=icon]:hidden">
+                <p className="text-sm font-medium truncate leading-none">
+                  {user?.name || "-"}
+                </p>
+                <p className="text-xs text-muted-foreground truncate mt-1.5">
+                  {user?.email || "-"}
+                </p>
+              </div>
+              <button
+                onClick={logout}
+                title="Sign out"
+                aria-label="Sign out"
+                className="shrink-0 rounded-lg p-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive group-data-[collapsible=icon]:mx-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <LogOut className="h-4 w-4" />
+              </button>
+            </div>
           </SidebarFooter>
         </Sidebar>
         <div

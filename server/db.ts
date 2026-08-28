@@ -17,6 +17,20 @@ export async function getDb() {
   return db;
 }
 
+export function buildUserUpdateSet(user: InsertUser): Partial<InsertUser> {
+  const updateSet: Partial<InsertUser> = { lastSignedIn: user.lastSignedIn ?? new Date() };
+  // Only overwrite profile fields when the caller explicitly provided them.
+  // authenticateRequest() heartbeats every request with just
+  // { openId, lastSignedIn } — overwriting name/email there would wipe the
+  // stored profile to NULL and make the sidebar render "-"/"-" placeholders.
+  if (user.name !== undefined) updateSet.name = user.name ?? null;
+  if (user.email !== undefined) updateSet.email = user.email ?? null;
+  if (user.loginMethod !== undefined) updateSet.loginMethod = user.loginMethod ?? null;
+  if (user.role) updateSet.role = user.role;
+  else if (user.openId === ENV.ownerOpenId) updateSet.role = "admin";
+  return updateSet;
+}
+
 export async function upsertUser(user: InsertUser): Promise<void> {
   if (!user.openId) throw new Error("User openId is required for upsert");
   const database = await getDb();
@@ -31,9 +45,9 @@ export async function upsertUser(user: InsertUser): Promise<void> {
   }
 
   const values: InsertUser = { openId: user.openId, name: user.name ?? null, email: user.email ?? null, loginMethod: user.loginMethod ?? null, lastSignedIn: user.lastSignedIn ?? new Date() };
-  const updateSet = { name: values.name, email: values.email, loginMethod: values.loginMethod, lastSignedIn: values.lastSignedIn };
-  if (user.role) { values.role = user.role; Object.assign(updateSet, { role: user.role }); }
-  else if (user.openId === ENV.ownerOpenId) { values.role = "admin"; Object.assign(updateSet, { role: "admin" }); }
+  if (user.role) values.role = user.role;
+  else if (user.openId === ENV.ownerOpenId) values.role = "admin";
+  const updateSet = buildUserUpdateSet(user);
 
   await database.insert(users).values(values).onConflictDoUpdate({ target: users.openId, set: updateSet });
 }

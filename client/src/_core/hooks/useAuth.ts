@@ -45,7 +45,16 @@ export function useAuth(options?: UseAuthOptions) {
         sessionStorage.removeItem("renewal-radar-session");
       } catch {}
       utils.auth.me.setData(undefined, null);
-      await utils.auth.me.invalidate();
+    }
+
+    // Hard-navigate so no cached tRPC state can restore the session view.
+    // Server-side the token is revoked already, so a fresh auth.me returns null.
+    if (typeof window !== "undefined") {
+      if (window.location.pathname === "/dashboard") {
+        window.location.assign("/");
+      } else {
+        window.location.reload();
+      }
     }
   }, [logoutMutation, utils]);
 

@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { COOKIE_NAME } from "../shared/const.js";
 import { z } from "zod";
 import { getSessionCookieOptions } from "./_core/cookies.js";
+import { sdk } from "./_core/sdk.js";
 import { systemRouter } from "./_core/systemRouter.js";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc.js";
 import { archiveDomain, createDomain, deleteDomain, domainInput, listDomains, recentJobRuns, restoreDomain, runExpiryCheck, updateDomain } from "./domain-service.js";
@@ -17,8 +18,25 @@ export const appRouter = router({
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {
+      const cookieHeader =
+        typeof ctx.req.headers?.cookie === "string" ? ctx.req.headers.cookie : "";
+      const token = cookieHeader
+        .split(";")
+        .map((part: string) => part.trim())
+        .find((part: string) => part.startsWith(`${COOKIE_NAME}=`))
+        ?.slice(COOKIE_NAME.length + 1);
+
+      // Revoke server-side so the session dies immediately even if the
+      // browser does not drop the cookie.
+      sdk.revokeSession(token);
+
       const cookieOptions = getSessionCookieOptions(ctx.req);
-      ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
+      // Clear with an explicit past expiry (no maxAge fiddling) so every
+      // browser deletes the cookie.
+      ctx.res.clearCookie(COOKIE_NAME, {
+        ...cookieOptions,
+        expires: new Date(0),
+      });
       return { success: true } as const;
     }),
   }),

@@ -15,6 +15,29 @@ export type SessionPayload = {
   name: string;
 };
 
+// In-memory revocation list. JWTs are stateless, so a logged-out token would
+// still verify until it expires; this map makes logout take effect immediately
+// even if the browser fails to drop the cookie (e.g. Expires ambiguity).
+// TTL matches the default session lifetime (ONE_YEAR_MS).
+const REVOKED_TTL_MS = ONE_YEAR_MS;
+const revokedTokens = new Map<string, number>();
+
+function tokenKey(token: string): string {
+  let hash = 0;
+  for (let i = 0; i < token.length; i++) {
+    hash = (hash * 31 + token.charCodeAt(i)) >>> 0;
+  }
+  return `${token.length}:${hash}`;
+}
+
+function pruneRevoked(now: number) {
+  if (revokedTokens.size > 10_000) {
+    for (const [key, expiresAt] of Array.from(revokedTokens.entries())) {
+      if (expiresAt < now) revokedTokens.delete(key);
+    }
+  }
+}
+
 class SDKServer {
   private getSessionSecret() {
     if (!ENV.cookieSecret) {
@@ -57,6 +80,13 @@ class SDKServer {
   ): Promise<SessionPayload | null> {
     if (!cookieValue) return null;
 
+    const now = Date.now();
+    pruneRevoked(now);
+    const revokeExpiresAt = revokedTokens.get(tokenKey(cookieValue));
+    if (revokeExpiresAt !== undefined && revokeExpiresAt >= now) {
+      return null;
+    }
+
     try {
       const { payload } = await jwtVerify(cookieValue, this.getSessionSecret(), {
         algorithms: ["HS256"],
@@ -75,6 +105,15 @@ class SDKServer {
     } catch {
       return null;
     }
+  }
+
+  /**
+   * Mark a session token as revoked so it can no longer authenticate, even if
+   * the client cookie was not fully removed. Safe to call with an empty value.
+   */
+  revokeSession(cookieValue: string | undefined | null): void {
+    if (!cookieValue) return;
+    revokedTokens.set(tokenKey(cookieValue), Date.now() + REVOKED_TTL_MS);
   }
 
   async authenticateRequest(req: ExpressRequest): Promise<AuthenticatedUser> {
