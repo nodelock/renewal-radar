@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "installCommand": "pnpm install --force && pnpm rebuild esbuild @tailwindcss/oxide",
-  "buildCommand": "pnpm build",
+  "buildCommand": "vite build",
   "outputDirectory": "dist/public",
   "crons": [
     {
