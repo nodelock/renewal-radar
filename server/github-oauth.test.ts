@@ -20,10 +20,12 @@ describe("GitHub OAuth", () => {
     });
   });
 
-  it("allows only the configured numeric GitHub user ID", () => {
-    expect(isGitHubUserAllowed({ id: 42 }, "42")).toBe(true);
-    expect(isGitHubUserAllowed({ id: 43 }, "42")).toBe(false);
-    expect(isGitHubUserAllowed({ id: 42 }, "")).toBe(false);
+  it("allows only the configured GitHub username", () => {
+    expect(isGitHubUserAllowed({ id: 42, login: "nodelock" }, "nodelock")).toBe(true);
+    expect(isGitHubUserAllowed({ id: 42, login: "NodeLock" }, " nodelock ")).toBe(true);
+    expect(isGitHubUserAllowed({ id: 43, login: "someone-else" }, "nodelock")).toBe(false);
+    expect(isGitHubUserAllowed({ id: 42 }, "nodelock")).toBe(false);
+    expect(isGitHubUserAllowed({ id: 42, login: "nodelock" }, "")).toBe(false);
   });
 
   it("round-trips the callback redirect and CSRF nonce in state", () => {

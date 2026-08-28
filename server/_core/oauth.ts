@@ -51,8 +51,11 @@ export function normalizeGitHubIdentity(profile: GitHubProfile, emails: GitHubEm
   } as const;
 }
 
-export function isGitHubUserAllowed(profile: GitHubProfile, allowedUserId = ENV.githubAllowedUserId) {
-  return Boolean(allowedUserId) && String(profile.id) === allowedUserId.trim();
+export function isGitHubUserAllowed(profile: GitHubProfile, allowedUsername = ENV.githubAllowedUsername) {
+  const login = profile.login?.trim();
+  const configured = allowedUsername.trim();
+  if (!login || !configured) return false;
+  return login.toLowerCase() === configured.toLowerCase();
 }
 
 async function exchangeCode(code: string, redirectUri: string) {

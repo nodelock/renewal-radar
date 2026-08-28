@@ -30,7 +30,7 @@ For a private single-owner Vercel deployment, configure the following variables.
 | `DATABASE_URL` | Yes | Server-only | PostgreSQL connection string from Neon or Supabase; use a pooled URL with `sslmode=require` when provided. |
 | `VITE_GITHUB_CLIENT_ID` | Yes | Public | GitHub OAuth App client ID used by the browser and server. It is intentionally public; do not mark it as a secret. |
 | `GITHUB_CLIENT_SECRET` | Yes | Server-only | GitHub OAuth App client secret. Never use a `VITE_` prefix for this value. |
-| `GITHUB_ALLOWED_USER_ID` | Yes | Server-only | Your immutable numeric GitHub user ID. Every other GitHub account is rejected. |
+| `GITHUB_ALLOWED_USERNAME` | Yes | Server-only | Your GitHub username. Every other GitHub account is rejected. |
 | `TELEGRAM_BOT_TOKEN` | For Telegram alerts | Server-only | Bot token created by BotFather. |
 | `TELEGRAM_CHAT_ID` | For Telegram alerts | Server-only | Telegram chat that receives renewal reminders. |
 | `SESSION_SECRET` | Yes | Server-only | Long random value used to sign HttpOnly login sessions. |
@@ -40,7 +40,7 @@ For a private single-owner Vercel deployment, configure the following variables.
 
 `VITE_GITHUB_CLIENT_ID` and `VITE_REPO_URL` are public values. The duplicated `GITHUB_CLIENT_ID` variable is not required by the current configuration; use the single `VITE_GITHUB_CLIENT_ID` value instead. `VITE_REPO_URL` is optional because the application has a repository URL fallback.
 
-To enable private single-owner login, set `GITHUB_ALLOWED_USER_ID` to your GitHub numeric user ID, not your username, display name, or email. You can find the number from the `id` field returned by GitHub's authenticated user API or from your GitHub account tooling. If this variable is missing or does not match the authenticated profile, the OAuth callback returns an authorization error and does not create a user or session.
+To enable private single-owner login, set `GITHUB_ALLOWED_USERNAME` to your GitHub username, for example `nodelock`. The comparison is case-insensitive and ignores surrounding whitespace. If this variable is missing or does not match the authenticated GitHub profile, the OAuth callback returns an authorization error and does not create a user or session. If you later rename your GitHub account, update this Vercel variable.
 
 For local or Preview environments, use a separate GitHub OAuth App when possible. The production callback URL for the current project is:
 
@@ -48,7 +48,7 @@ For local or Preview environments, use a separate GitHub OAuth App when possible
 https://renewal-radar-three.vercel.app/api/oauth/callback
 ```
 
-For the smallest personal deployment, the core variables are `DATABASE_URL`, `VITE_GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, `GITHUB_ALLOWED_USER_ID`, `SESSION_SECRET`, and `CRON_SECRET`. Add `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` only when Telegram reminders are enabled. Add `SCHEDULED_TASK_SECRET` only when using an external scheduler instead of Vercel Cron. Real secrets should be added separately to the Production, Preview, and Development environments only when those environments are actively used.
+For the smallest personal deployment, the core variables are `DATABASE_URL`, `VITE_GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, `GITHUB_ALLOWED_USERNAME`, `SESSION_SECRET`, and `CRON_SECRET`. Add `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` only when Telegram reminders are enabled. Add `SCHEDULED_TASK_SECRET` only when using an external scheduler instead of Vercel Cron. Real secrets should be added separately to the Production, Preview, and Development environments only when those environments are actively used.
 
 ## Local development
 
