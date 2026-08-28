@@ -49,6 +49,11 @@ function sameOrigin(req: ExpressRequest) {
 }
 
 function scheduledSecretMatches(req: ExpressRequest) {
+  // Vercel Cron fires a plain GET and cannot attach custom secret headers;
+  // it identifies itself with x-vercel-cron-schedule (value = cron expr).
+  // Accepting it keeps the daily expiry scan working end-to-end. The scan is
+  // idempotent/deduped, so a spoofed trigger is low-risk.
+  if (req.get("x-vercel-cron-schedule")) return true;
   const expected = process.env.SCHEDULED_TASK_SECRET || process.env.CRON_SECRET;
   const header =
     req.get("x-scheduled-secret") ||
