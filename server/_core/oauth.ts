@@ -4,10 +4,10 @@ import { parse as parseCookieHeader } from "cookie";
 type ExpressRequest = any;
 type ExpressResponse = any;
 type ExpressApp = any;
-import * as db from "../db";
-import { getSessionCookieOptions } from "./cookies";
-import { ENV } from "./env";
-import { sdk } from "./sdk";
+import * as db from "../db.js";
+import { getSessionCookieOptions } from "./cookies.js";
+import { ENV } from "./env.js";
+import { sdk } from "./sdk.js";
 
 type GitHubProfile = {
   id: number;

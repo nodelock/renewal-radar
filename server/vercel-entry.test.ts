@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createApp } from "./_core/index";
+import { createApp } from "./_core/index.js";
 
 function invoke(app: any, method: string, path: string) {
   return new Promise<{ status: number; body: string }>((resolve, reject) => {

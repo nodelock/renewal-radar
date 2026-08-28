@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { domainInput } from "./domain-service";
+import { domainInput } from "./domain-service.js";
 
 describe("domainInput", () => {
   it("accepts a normal domain with an HTTPS renewal URL", () => {

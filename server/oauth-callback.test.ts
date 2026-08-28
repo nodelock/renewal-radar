@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { encodeOAuthState, OAUTH_STATE_COOKIE } from "../shared/const";
+import { encodeOAuthState, OAUTH_STATE_COOKIE } from "../shared/const.js";
 
 const dbMock = vi.hoisted(() => {
   process.env.GITHUB_CLIENT_ID ||= "test-github-client";

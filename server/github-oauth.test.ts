@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { encodeOAuthState, decodeOAuthState } from "../shared/const";
-import { isGitHubUserAllowed, normalizeGitHubIdentity } from "./_core/oauth";
+import { encodeOAuthState, decodeOAuthState } from "../shared/const.js";
+import { isGitHubUserAllowed, normalizeGitHubIdentity } from "./_core/oauth.js";
 
 describe("GitHub OAuth", () => {
   it("uses a stable GitHub identity and prefers a verified primary email", () => {

@@ -1,8 +1,8 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { eq } from "drizzle-orm";
 import { Pool } from "pg";
-import { ENV } from "./_core/env";
-import { InsertUser, users } from "../drizzle/schema";
+import { ENV } from "./_core/env.js";
+import { InsertUser, users } from "../drizzle/schema.js";
 
 let pool: Pool | null = null;
 let db: ReturnType<typeof drizzle> | null = null;
