@@ -6,10 +6,10 @@ import path from "path";
 
 export async function setupVite(app: Express, server: Server) {
   // Vite (and its rollup dependency) is a build-time tool. Import it lazily so
-  // the production runtime never pulls Vite/Rollup into memory. This keeps the
-  // serverless deployment from needing Vite's platform-native rollup binary.
+  // the production runtime never pulls Vite/Rollup into memory — this avoids the
+  // "Cannot find module @rollup/rollup-linux-x64-gnu" crash on Vercel's runtime.
   const { createServer: createViteServer } = await import("vite");
-  const viteConfig = (await import("../../vite.config")).default;
+  const viteConfig = (await import("../../vite.config.js")).default;
 
   const serverOptions = {
     middlewareMode: true,
