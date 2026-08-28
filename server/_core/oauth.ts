@@ -1,4 +1,4 @@
-import { COOKIE_NAME, ONE_YEAR_MS, OAUTH_STATE_COOKIE, decodeOAuthState } from "@shared/const";
+import { COOKIE_NAME, ONE_YEAR_MS, OAUTH_STATE_COOKIE, decodeOAuthState } from "../../shared/const.js";
 import { parse as parseCookieHeader } from "cookie";
 // Keep the Vercel-facing Express adapter boundary explicit; see index.ts.
 type ExpressRequest = any;

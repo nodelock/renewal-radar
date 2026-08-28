@@ -1,5 +1,5 @@
-import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
-import { ForbiddenError } from "@shared/_core/errors";
+import { COOKIE_NAME, ONE_YEAR_MS } from "../../shared/const.js";
+import { ForbiddenError } from "../../shared/_core/errors.js";
 import { SignJWT, jwtVerify } from "jose";
 type ExpressRequest = any;
 import type { User } from "../../drizzle/schema.js";

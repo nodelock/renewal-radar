@@ -40,6 +40,8 @@
 - [ ] Fix Vercel deployment exposing bundled server source at the public root; local adapter and tests complete, remote redeploy pending
 - [x] Fix production GitHub OAuth callback 404 on Vercel and verify the callback route after redeploy; explicit route now resolves to the function
 - [ ] Fix production GitHub OAuth Serverless Function crash caused by ESM module resolution and verify OAuth callback execution
+- [x] Remove runtime @shared alias imports from the Vercel server dependency chain
+- [x] Inspect Vercel crash ID sfo1::d8k2p-1787942083862-53d8987b2232 and identify the next runtime exception
 - [x] Fix Vercel TypeScript build errors caused by incorrect Express Request/Response type resolution and verify the Vercel build path locally
 - [x] Remove or safely gate undefined analytics placeholders and invalid analytics script markup in the production HTML, then verify the production HTML is warning-free
 - [x] Generate a fresh GitHub-upload archive from the latest local source, excluding secrets, build output, and dependency folders
