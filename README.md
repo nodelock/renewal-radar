@@ -23,17 +23,32 @@ The application includes a public product page, GitHub OAuth sign-in, a responsi
 
 ## Environment variables
 
-Copy `env.example` into your deployment platform settings. Never commit real values.
+For a private single-owner Vercel deployment, configure the following variables. Copy the names from `env.example`, replace every placeholder with a real value, and never commit those values to Git.
 
-- `DATABASE_URL`: PostgreSQL connection string from Neon or Supabase.
-- `GITHUB_CLIENT_ID`: GitHub OAuth App client ID.
-- `GITHUB_CLIENT_SECRET`: server-only GitHub OAuth App secret.
-- `VITE_GITHUB_CLIENT_ID`: public GitHub OAuth App client ID used by the browser.
-- `TELEGRAM_BOT_TOKEN`: server-only Telegram bot token.
-- `TELEGRAM_CHAT_ID`: destination chat ID.
-- `SESSION_SECRET`: a long random secret used by the signed session layer.
-- `SCHEDULED_TASK_SECRET`: secret for authenticated external scheduler calls.
-- `VITE_REPO_URL`: public repository URL used by the homepage links.
+| Variable | Required | Exposure | Purpose |
+|---|---:|---|---|
+| `DATABASE_URL` | Yes | Server-only | PostgreSQL connection string from Neon or Supabase; use a pooled URL with `sslmode=require` when provided. |
+| `VITE_GITHUB_CLIENT_ID` | Yes | Public | GitHub OAuth App client ID used by the browser and server. It is intentionally public; do not mark it as a secret. |
+| `GITHUB_CLIENT_SECRET` | Yes | Server-only | GitHub OAuth App client secret. Never use a `VITE_` prefix for this value. |
+| `GITHUB_ALLOWED_USER_ID` | Yes | Server-only | Your immutable numeric GitHub user ID. Every other GitHub account is rejected. |
+| `TELEGRAM_BOT_TOKEN` | For Telegram alerts | Server-only | Bot token created by BotFather. |
+| `TELEGRAM_CHAT_ID` | For Telegram alerts | Server-only | Telegram chat that receives renewal reminders. |
+| `SESSION_SECRET` | Yes | Server-only | Long random value used to sign HttpOnly login sessions. |
+| `SCHEDULED_TASK_SECRET` | Yes | Server-only | Long random value used to protect the expiry-scan endpoint. |
+| `CRON_SECRET` | For Vercel Cron | Server-only | Use the same value as `SCHEDULED_TASK_SECRET` so Vercel Cron authorization matches the endpoint. |
+| `VITE_REPO_URL` | Recommended | Public | Repository link shown by the homepage, normally `https://github.com/nodelock/renewal-radar`. |
+
+`VITE_GITHUB_CLIENT_ID` and `VITE_REPO_URL` are the only public values in this list. The duplicated `GITHUB_CLIENT_ID` variable is not required by the current configuration; use the single `VITE_GITHUB_CLIENT_ID` value instead.
+
+To enable private single-owner login, set `GITHUB_ALLOWED_USER_ID` to your GitHub numeric user ID, not your username, display name, or email. You can find the number from the `id` field returned by GitHub's authenticated user API or from your GitHub account tooling. If this variable is missing or does not match the authenticated profile, the OAuth callback returns an authorization error and does not create a user or session.
+
+For local or Preview environments, use a separate GitHub OAuth App when possible. The production callback URL for the current project is:
+
+```text
+https://renewal-radar-three.vercel.app/api/oauth/callback
+```
+
+Real secrets should be added separately to the Production, Preview, and Development environments only when those environments are actively used.
 
 ## Local development
 

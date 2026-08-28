@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { encodeOAuthState, decodeOAuthState } from "../shared/const";
-import { normalizeGitHubIdentity } from "./_core/oauth";
+import { isGitHubUserAllowed, normalizeGitHubIdentity } from "./_core/oauth";
 
 describe("GitHub OAuth", () => {
   it("uses a stable GitHub identity and prefers a verified primary email", () => {
@@ -18,6 +18,12 @@ describe("GitHub OAuth", () => {
       email: "primary@example.com",
       loginMethod: "github",
     });
+  });
+
+  it("allows only the configured numeric GitHub user ID", () => {
+    expect(isGitHubUserAllowed({ id: 42 }, "42")).toBe(true);
+    expect(isGitHubUserAllowed({ id: 43 }, "42")).toBe(false);
+    expect(isGitHubUserAllowed({ id: 42 }, "")).toBe(false);
   });
 
   it("round-trips the callback redirect and CSRF nonce in state", () => {

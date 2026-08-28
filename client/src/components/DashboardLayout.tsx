@@ -20,6 +20,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { startLogin } from "@/const";
+import { BrandIcon } from "@/components/BrandIcon";
 import { useIsMobile } from "@/hooks/useMobile";
 import { LayoutDashboard, LogOut, PanelLeft, Users } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
@@ -159,7 +160,7 @@ function DashboardLayoutContent({
         >
           <SidebarHeader className="h-16 justify-center">
             <div className="flex items-center gap-3 px-2 transition-all w-full">
-              <img src="/manus-storage/renewal-radar-icon-v2_54f9c0f6.png" alt="Renewal Radar" className="h-8 w-8 rounded-xl shrink-0" />
+              <BrandIcon className="h-8 w-8 rounded-xl shrink-0" />
               <button
                 onClick={toggleSidebar}
                 className="h-8 w-8 flex items-center justify-center hover:bg-accent rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring shrink-0"
@@ -247,7 +248,7 @@ function DashboardLayoutContent({
             <div className="flex items-center gap-2">
               <SidebarTrigger className="h-9 w-9 rounded-lg bg-background" />
               <div className="flex items-center gap-3">
-                <img src="/manus-storage/renewal-radar-icon-v2_54f9c0f6.png" alt="Renewal Radar" className="h-8 w-8 rounded-xl" />
+                <BrandIcon className="h-8 w-8 rounded-xl" />
                 <div className="flex flex-col gap-1">
                   <span className="tracking-tight text-foreground">
                     {activeMenuItem?.label ?? "Menu"}

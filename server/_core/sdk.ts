@@ -1,7 +1,7 @@
 import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 import { ForbiddenError } from "@shared/_core/errors";
 import { SignJWT, jwtVerify } from "jose";
-import type { Request } from "express";
+type ExpressRequest = any;
 import type { User } from "../../drizzle/schema";
 import * as db from "../db";
 import { ENV } from "./env";
@@ -77,15 +77,16 @@ class SDKServer {
     }
   }
 
-  async authenticateRequest(req: Request): Promise<AuthenticatedUser> {
-    const cookieHeader = req.headers.cookie ?? "";
+  async authenticateRequest(req: ExpressRequest): Promise<AuthenticatedUser> {
+    const cookieHeader = typeof req.headers?.cookie === "string" ? req.headers.cookie : "";
     const sessionToken = cookieHeader
       .split(";")
-      .map(part => part.trim())
-      .find(part => part.startsWith(`${COOKIE_NAME}=`))
+      .map((part: string) => part.trim())
+      .find((part: string) => part.startsWith(`${COOKIE_NAME}=`))
       ?.slice(COOKIE_NAME.length + 1);
-    const bearer = req.headers.authorization?.startsWith("Bearer ")
-      ? req.headers.authorization.slice(7)
+    const authorization = typeof req.headers?.authorization === "string" ? req.headers.authorization : "";
+    const bearer = authorization.startsWith("Bearer ")
+      ? authorization.slice(7)
       : undefined;
     const session = await this.verifySession(sessionToken || bearer);
 

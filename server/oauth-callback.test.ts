@@ -4,6 +4,7 @@ import { encodeOAuthState, OAUTH_STATE_COOKIE } from "../shared/const";
 const dbMock = vi.hoisted(() => {
   process.env.GITHUB_CLIENT_ID ||= "test-github-client";
   process.env.GITHUB_CLIENT_SECRET ||= "test-github-secret";
+  process.env.GITHUB_ALLOWED_USER_ID ||= "7";
   process.env.SESSION_SECRET ||= "test-session-secret-that-is-long-enough";
   return { upsertUser: vi.fn().mockResolvedValue(undefined) };
 });

@@ -18,7 +18,7 @@ Authorization callback URL:
 https://renewal-radar-three.vercel.app/api/oauth/callback
 ```
 
-Add `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, and `VITE_GITHUB_CLIENT_ID` to the deployment environment. The client ID is safe to expose to the browser; the client secret must remain server-only. The application uses the OAuth authorization-code flow with a one-time state nonce, then creates a signed HttpOnly session cookie.
+For a private single-owner deployment, add `VITE_GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, and `GITHUB_ALLOWED_USER_ID`. The client ID is intentionally public because the browser uses it to start OAuth; the client secret remains server-only. `GITHUB_ALLOWED_USER_ID` is your immutable numeric GitHub user ID, not your username, display name, or email. The callback rejects every account whose numeric ID does not match it, before creating a user or session. The application uses the OAuth authorization-code flow with a one-time state nonce and a signed HttpOnly session cookie.
 
 This is a breaking identity-provider migration from the earlier preview-only Manus OAuth implementation. Existing records keyed to old Manus `openId` values are not automatically linked to a new `github:<id>` identity. Before production use, review existing users and transfer domain ownership only through a verified administrative migration; do not guess or match accounts by display name or email alone.
 
@@ -30,15 +30,20 @@ Configure these variables for Production:
 
 ```text
 DATABASE_URL
-GITHUB_CLIENT_ID
-GITHUB_CLIENT_SECRET
 VITE_GITHUB_CLIENT_ID
+GITHUB_CLIENT_SECRET
+GITHUB_ALLOWED_USER_ID
 TELEGRAM_BOT_TOKEN
 TELEGRAM_CHAT_ID
 SESSION_SECRET
 SCHEDULED_TASK_SECRET
+CRON_SECRET
 VITE_REPO_URL
 ```
+
+`CRON_SECRET` should use the same value as `SCHEDULED_TASK_SECRET` when the built-in Vercel Cron is enabled. `VITE_GITHUB_CLIENT_ID` and `VITE_REPO_URL` are public configuration values. Do not add the old duplicate `GITHUB_CLIENT_ID`, and do not create `VITE_GITHUB_CLIENT_SECRET`. No `OWNER_OPEN_ID`, `OAUTH_SERVER_URL`, `VITE_APP_ID`, or Manus-specific variables are required for this GitHub-only deployment.
+
+To obtain `GITHUB_ALLOWED_USER_ID`, use the numeric `id` returned for your own account by GitHub's authenticated user API or your GitHub account tooling. Copy only that number into Vercel. If the value is missing, login is intentionally denied.
 
 Vercel Cron can use its built-in `CRON_SECRET` authorization convention; the endpoint also accepts `X-Scheduled-Secret` with `SCHEDULED_TASK_SECRET` for other runners. Do not put secrets in `vercel.json` or the repository.
 

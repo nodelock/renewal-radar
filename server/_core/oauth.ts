@@ -51,6 +51,10 @@ export function normalizeGitHubIdentity(profile: GitHubProfile, emails: GitHubEm
   } as const;
 }
 
+export function isGitHubUserAllowed(profile: GitHubProfile, allowedUserId = ENV.githubAllowedUserId) {
+  return Boolean(allowedUserId) && String(profile.id) === allowedUserId.trim();
+}
+
 async function exchangeCode(code: string, redirectUri: string) {
   const response = await fetch("https://github.com/login/oauth/access_token", {
     method: "POST",
@@ -141,6 +145,11 @@ export function registerOAuthRoutes(app: ExpressApp) {
       const accessToken = await exchangeCode(code, expectedRedirectUri);
       const { profile, emails } = await getGitHubProfile(accessToken);
       if (!Number.isInteger(profile.id)) throw new Error("GitHub user id missing");
+
+      if (!isGitHubUserAllowed(profile)) {
+        res.status(403).json({ error: "This GitHub account is not authorized for this private installation" });
+        return;
+      }
 
       const identity = normalizeGitHubIdentity(profile, emails);
       await db.upsertUser({

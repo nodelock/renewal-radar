@@ -1,0 +1,40 @@
+type BrandIconProps = {
+  className?: string;
+  label?: string;
+};
+
+export function BrandIcon({ className, label = "Renewal Radar" }: BrandIconProps) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 64 64"
+      role="img"
+      aria-label={label}
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect width="64" height="64" rx="16" fill="#172033" />
+      <path
+        d="M17 35a19 19 0 1 1 30-14"
+        fill="none"
+        stroke="#91a0ff"
+        strokeWidth="5"
+        strokeLinecap="round"
+      />
+      <path
+        d="M47 29a19 19 0 0 1-27 17"
+        fill="none"
+        stroke="#6473d8"
+        strokeWidth="5"
+        strokeLinecap="round"
+      />
+      <path
+        d="m32 19 2.6 9.4L44 32l-9.4 3.6L32 45l-2.6-9.4L20 32l9.4-3.6L32 19Z"
+        fill="#aebaff"
+      />
+      <path
+        d="m32 27 1.4 3.6L37 32l-3.6 1.4L32 37l-1.4-3.6L27 32l3.6-1.4L32 27Z"
+        fill="#fff"
+      />
+    </svg>
+  );
+}
