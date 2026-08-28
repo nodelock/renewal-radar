@@ -3,10 +3,14 @@ import fs from "fs";
 import { type Server } from "http";
 import { nanoid } from "nanoid";
 import path from "path";
-import { createServer as createViteServer } from "vite";
-import viteConfig from "../../vite.config.js";
 
 export async function setupVite(app: Express, server: Server) {
+  // Vite (and its rollup dependency) is a build-time tool. Import it lazily so
+  // the production runtime never pulls Vite/Rollup into memory — this avoids the
+  // "Cannot find module @rollup/rollup-linux-x64-gnu" crash on Vercel's runtime.
+  const { createServer: createViteServer } = await import("vite");
+  const viteConfig = (await import("../../vite.config.js")).default;
+
   const serverOptions = {
     middlewareMode: true,
     hmr: { server },

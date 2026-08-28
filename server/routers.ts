@@ -1,10 +1,10 @@
 import { TRPCError } from "@trpc/server";
-import { COOKIE_NAME } from "../shared/const.js";
+import { COOKIE_NAME } from "../shared/const";
 import { z } from "zod";
-import { getSessionCookieOptions } from "./_core/cookies.js";
-import { systemRouter } from "./_core/systemRouter.js";
-import { protectedProcedure, publicProcedure, router } from "./_core/trpc.js";
-import { archiveDomain, createDomain, deleteDomain, domainInput, listDomains, recentJobRuns, restoreDomain, runExpiryCheck, updateDomain } from "./domain-service.js";
+import { getSessionCookieOptions } from "./_core/cookies";
+import { systemRouter } from "./_core/systemRouter";
+import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
+import { archiveDomain, createDomain, deleteDomain, domainInput, listDomains, recentJobRuns, restoreDomain, runExpiryCheck, updateDomain } from "./domain-service";
 
 const idInput = z.object({ id: z.string().uuid() });
 
