@@ -6,9 +6,41 @@ Repository: https://github.com/nodelock/renewal-radar
 
 Create a PostgreSQL database with Neon or Supabase and copy its pooled connection string into the deployment platform as `DATABASE_URL`. The schema is PostgreSQL-specific and does not require a vendor-specific extension. Apply the SQL in `drizzle/migrations/0000_foamy_sir_ram.sql` with the provider SQL editor or `pnpm drizzle-kit migrate` from a trusted environment.
 
+## GitHub OAuth
+
+Create a GitHub OAuth App with the deployed application URL as its homepage. For the Vercel project `renewal-radar-three.vercel.app`, use:
+
+```text
+Homepage URL:
+https://renewal-radar-three.vercel.app
+
+Authorization callback URL:
+https://renewal-radar-three.vercel.app/api/oauth/callback
+```
+
+Add `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, and `VITE_GITHUB_CLIENT_ID` to the deployment environment. The client ID is safe to expose to the browser; the client secret must remain server-only. The application uses the OAuth authorization-code flow with a one-time state nonce, then creates a signed HttpOnly session cookie.
+
+This is a breaking identity-provider migration from the earlier preview-only Manus OAuth implementation. Existing records keyed to old Manus `openId` values are not automatically linked to a new `github:<id>` identity. Before production use, review existing users and transfer domain ownership only through a verified administrative migration; do not guess or match accounts by display name or email alone.
+
 ## Vercel
 
-Import the repository, set the project build command to `pnpm build`, and add the server-side variables `DATABASE_URL`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `SESSION_SECRET`, and `SCHEDULED_TASK_SECRET`. The included `vercel.json` schedules `/api/scheduled/check-expiry` daily. The endpoint accepts GET and POST and supports either `Authorization: Bearer $CRON_SECRET` or `X-Scheduled-Secret: $SCHEDULED_TASK_SECRET`. Vercel Cron can use its built-in `CRON_SECRET` authorization convention; other runners should send the custom header.
+Import the repository and keep the build command as `pnpm build`. The included `vercel.json` publishes `dist/public` and schedules `/api/scheduled/check-expiry` daily. The `api/index.ts` entry adapts the Express application to a Vercel Function; do not expose `dist/index.js` as the public root.
+
+Configure these variables for Production:
+
+```text
+DATABASE_URL
+GITHUB_CLIENT_ID
+GITHUB_CLIENT_SECRET
+VITE_GITHUB_CLIENT_ID
+TELEGRAM_BOT_TOKEN
+TELEGRAM_CHAT_ID
+SESSION_SECRET
+SCHEDULED_TASK_SECRET
+VITE_REPO_URL
+```
+
+Vercel Cron can use its built-in `CRON_SECRET` authorization convention; the endpoint also accepts `X-Scheduled-Secret` with `SCHEDULED_TASK_SECRET` for other runners. Do not put secrets in `vercel.json` or the repository.
 
 ## Netlify
 
@@ -20,8 +52,9 @@ GitHub Actions can call the endpoint once a day from a private repository. Store
 
 ## Post-deployment verification
 
-1. Open the public homepage and complete sign-in.
-2. Add a test domain with an HTTPS renewal URL.
-3. Call the scheduled endpoint from a secure runner and confirm a `job_runs` row is written.
-4. Confirm the notification log prevents a second message for the same domain, type, and expiry date.
-5. Remove the test asset and rotate any temporary credentials.
+1. Open the public homepage and complete GitHub sign-in.
+2. Confirm the browser returns to `/dashboard` after the OAuth callback.
+3. Add a test domain with an HTTPS renewal URL.
+4. Call the scheduled endpoint from a secure runner and confirm a `job_runs` row is written.
+5. Confirm the notification log prevents a second message for the same domain, type, and expiry date.
+6. Remove the test asset and rotate any temporary credentials.

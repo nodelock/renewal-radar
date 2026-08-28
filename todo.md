@@ -30,3 +30,12 @@
 - [x] Clarify page 2/404 navigation issue and verify all public links target registered routes
 - [x] Unify the public homepage copy to one language without Chinese-English mixing
 - [x] Set VITE_REPO_URL and all public repository references to https://github.com/nodelock/renewal-radar
+- [x] Recheck latest GitHub upload for complete source tree and deployable project files
+- [ ] Diagnose and fix the red X on the Add complete Renewal Radar source GitHub Actions check (local workflow fix ready; GitHub rerun pending)
+- [ ] Recheck latest remote repository contents and Quality workflow result after push
+- [ ] Prepare and verify production Vercel deployment prerequisites for Renewal Radar, including real GitHub callback verification
+- [x] Replace Manus OAuth with GitHub OAuth using signed sessions; this is a breaking migration and legacy Manus identities require a separate verified ownership-transfer procedure
+- [x] Add GitHub OAuth environment variable documentation and callback setup instructions
+- [x] Add tests for GitHub OAuth state, callback, session creation, and unauthenticated access
+- [ ] Fix Vercel deployment exposing bundled server source at the public root; local adapter and tests complete, remote redeploy pending
+- [ ] Generate a fresh GitHub-upload archive from the latest local source, excluding secrets, build output, and dependency folders
