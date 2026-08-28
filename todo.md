@@ -38,6 +38,7 @@
 - [x] Add GitHub OAuth environment variable documentation and callback setup instructions
 - [x] Add tests for GitHub OAuth state, callback, session creation, and unauthenticated access
 - [ ] Fix Vercel deployment exposing bundled server source at the public root; local adapter and tests complete, remote redeploy pending
+- [ ] Fix production GitHub OAuth callback 404 on Vercel and verify the callback route after redeploy
 - [x] Fix Vercel TypeScript build errors caused by incorrect Express Request/Response type resolution and verify the Vercel build path locally
 - [x] Remove or safely gate undefined analytics placeholders and invalid analytics script markup in the production HTML, then verify the production HTML is warning-free
 - [x] Generate a fresh GitHub-upload archive from the latest local source, excluding secrets, build output, and dependency folders
@@ -47,7 +48,7 @@
 - [x] Package the current feature-optimized version without further icon changes for GitHub Desktop upload
 - [x] Restrict GitHub OAuth sign-in to an explicit owner GitHub numeric user ID allowlist
 - [x] Simplify the private GitHub allowlist from numeric user ID to GitHub username
-- [ ] Package the GitHub-username allowlist version for GitHub Desktop upload
+- [x] Package the GitHub-username allowlist version for GitHub Desktop upload
 - [x] Simplify Vercel environment variables for private single-owner GitHub deployment
 - [x] Reduce personal self-hosting configuration to the smallest practical environment variable set without weakening private login
 - [x] Document every required Vercel environment variable and private GitHub allowlist setting in README and deployment docs using English-only documentation

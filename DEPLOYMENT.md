@@ -24,7 +24,7 @@ This is a breaking identity-provider migration from the earlier preview-only Man
 
 ## Vercel
 
-Import the repository and keep the build command as `pnpm build`. The included `vercel.json` publishes `dist/public` and schedules `/api/scheduled/check-expiry` daily. The `api/index.ts` entry adapts the Express application to a Vercel Function; do not expose `dist/index.js` as the public root.
+Import the repository and keep the build command as `pnpm build`. The included `vercel.json` publishes `dist/public` and schedules `/api/scheduled/check-expiry` daily. The `api/index.ts` entry adapts the Express application to a Vercel Function, while `api/[...path].ts` handles nested routes such as `/api/oauth/callback`, `/api/trpc`, and `/api/scheduled/check-expiry`; do not expose `dist/index.js` as the public root.
 
 Configure these variables for Production:
 
