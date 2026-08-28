@@ -1,7 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { startLogin } from "@/const";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BellRing, Check, Github, LockKeyhole, Menu, ShieldCheck, Sparkles, TimerReset } from "lucide-react";
+import { ArrowRight, BellRing, Check, Github, LockKeyhole, Menu, ShieldCheck, TimerReset } from "lucide-react";
 import { useLocation } from "wouter";
 
 const repoUrl = import.meta.env.VITE_REPO_URL || "https://github.com/nodelock/renewal-radar";
@@ -21,7 +21,7 @@ export default function Home() {
     <div className="min-h-screen overflow-hidden bg-[#f7f8fc] text-[#172033]">
       <header className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-5 py-6 lg:px-8">
         <a href="/" className="flex items-center gap-3" aria-label="Domain Renewal Radar home">
-          <span className="grid h-10 w-10 place-items-center rounded-2xl bg-[#172033] text-white shadow-lg shadow-[#172033]/15"><Sparkles size={18} /></span>
+          <img src="/manus-storage/renewal-radar-icon-v2_54f9c0f6.png" alt="Renewal Radar" className="h-10 w-10 rounded-2xl shadow-lg shadow-[#172033]/15" />
           <span className="text-sm font-semibold tracking-[0.16em] text-[#172033]">RENEWAL RADAR</span>
         </a>
         <nav className="hidden items-center gap-8 text-sm text-[#667085] md:flex">

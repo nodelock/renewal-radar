@@ -1,4 +1,10 @@
-import express, { type Request, type Response } from "express";
+import express from "express";
+
+// Vercel's function compiler can resolve Express's ambient generic types differently
+// from the local TypeScript toolchain. Keep this thin framework boundary explicit.
+type ExpressRequest = any;
+type ExpressResponse = any;
+type ExpressNext = any;
 import { createServer } from "http";
 import net from "net";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
@@ -26,7 +32,7 @@ async function findAvailablePort(startPort = 3000) {
 
 const hits = new Map<string, { count: number; resetAt: number }>();
 
-function rateLimit(req: Request, res: Response, next: () => void) {
+function rateLimit(req: ExpressRequest, res: ExpressResponse, next: ExpressNext) {
   const key = req.ip || "unknown";
   const now = Date.now();
   const entry = hits.get(key);
@@ -46,7 +52,7 @@ function rateLimit(req: Request, res: Response, next: () => void) {
   next();
 }
 
-function sameOrigin(req: Request) {
+function sameOrigin(req: ExpressRequest) {
   const origin = req.get("origin");
   const referer = req.get("referer");
   const source = origin || referer;
@@ -59,7 +65,7 @@ function sameOrigin(req: Request) {
   }
 }
 
-function scheduledSecretMatches(req: Request) {
+function scheduledSecretMatches(req: ExpressRequest) {
   const expected = process.env.SCHEDULED_TASK_SECRET || process.env.CRON_SECRET;
   const header =
     req.get("x-scheduled-secret") ||
@@ -77,7 +83,7 @@ export async function createApp(options: { serveFrontend?: boolean } = {}) {
   registerStorageProxy(app);
   registerOAuthRoutes(app);
 
-  const scheduledHandler = async (req: Request, res: Response) => {
+  const scheduledHandler = async (req: ExpressRequest, res: ExpressResponse) => {
     if (!scheduledSecretMatches(req)) {
       return res.status(401).json({ error: "scheduled authentication failed" });
     }
@@ -96,7 +102,7 @@ export async function createApp(options: { serveFrontend?: boolean } = {}) {
   app.get("/api/scheduled/check-expiry", scheduledHandler);
   app.post("/api/scheduled/check-expiry", scheduledHandler);
 
-  app.use("/api/trpc", (req, res, next) => {
+  app.use("/api/trpc", (req: ExpressRequest, res: ExpressResponse, next: ExpressNext) => {
     if (
       ["POST", "PUT", "PATCH", "DELETE"].includes(req.method) &&
       !sameOrigin(req)

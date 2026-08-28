@@ -1,6 +1,9 @@
 import { COOKIE_NAME, ONE_YEAR_MS, OAUTH_STATE_COOKIE, decodeOAuthState } from "@shared/const";
 import { parse as parseCookieHeader } from "cookie";
-import type { Express, Request, Response } from "express";
+// Keep the Vercel-facing Express adapter boundary explicit; see index.ts.
+type ExpressRequest = any;
+type ExpressResponse = any;
+type ExpressApp = any;
 import * as db from "../db";
 import { getSessionCookieOptions } from "./cookies";
 import { ENV } from "./env";
@@ -19,18 +22,18 @@ type GitHubEmail = {
   verified?: boolean;
 };
 
-function getQueryParam(req: Request, key: string): string | undefined {
+function getQueryParam(req: ExpressRequest, key: string): string | undefined {
   const value = req.query[key];
   return typeof value === "string" ? value : undefined;
 }
 
-function getRequestOrigin(req: Request) {
+function getRequestOrigin(req: ExpressRequest) {
   const forwardedProto = req.get("x-forwarded-proto")?.split(",")[0]?.trim();
   const protocol = forwardedProto || req.protocol;
   return `${protocol}://${req.get("host")}`;
 }
 
-export function getGitHubRedirectUri(req: Request) {
+export function getGitHubRedirectUri(req: ExpressRequest) {
   return `${getRequestOrigin(req)}/api/oauth/callback`;
 }
 
@@ -93,8 +96,8 @@ async function getGitHubProfile(accessToken: string) {
   };
 }
 
-export function registerOAuthRoutes(app: Express) {
-  app.get("/api/oauth/callback", async (req: Request, res: Response) => {
+export function registerOAuthRoutes(app: ExpressApp) {
+  app.get("/api/oauth/callback", async (req: ExpressRequest, res: ExpressResponse) => {
     const code = getQueryParam(req, "code");
     const state = getQueryParam(req, "state");
     const error = getQueryParam(req, "error");

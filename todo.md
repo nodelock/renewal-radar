@@ -32,10 +32,14 @@
 - [x] Set VITE_REPO_URL and all public repository references to https://github.com/nodelock/renewal-radar
 - [x] Recheck latest GitHub upload for complete source tree and deployable project files
 - [ ] Diagnose and fix the red X on the Add complete Renewal Radar source GitHub Actions check (local workflow fix ready; GitHub rerun pending)
-- [ ] Recheck latest remote repository contents and Quality workflow result after push
-- [ ] Prepare and verify production Vercel deployment prerequisites for Renewal Radar, including real GitHub callback verification
+- [ ] Recheck latest remote repository contents and Quality workflow result after push, including the deployment fix
+- [ ] Prepare and verify production Vercel deployment prerequisites for Renewal Radar, including real GitHub callback verification and a successful redeploy
 - [x] Replace Manus OAuth with GitHub OAuth using signed sessions; this is a breaking migration and legacy Manus identities require a separate verified ownership-transfer procedure
 - [x] Add GitHub OAuth environment variable documentation and callback setup instructions
 - [x] Add tests for GitHub OAuth state, callback, session creation, and unauthenticated access
 - [ ] Fix Vercel deployment exposing bundled server source at the public root; local adapter and tests complete, remote redeploy pending
-- [ ] Generate a fresh GitHub-upload archive from the latest local source, excluding secrets, build output, and dependency folders
+- [x] Fix Vercel TypeScript build errors caused by incorrect Express Request/Response type resolution and verify the Vercel build path locally
+- [x] Remove or safely gate undefined analytics placeholders and invalid analytics script markup in the production HTML, then verify the production HTML is warning-free
+- [x] Generate a fresh GitHub-upload archive from the latest local source, excluding secrets, build output, and dependency folders
+- [x] Add a Renewal Radar icon consistent with the existing landing page and dashboard visual language
+- [x] Refine the Renewal Radar icon after visual feedback: simplify the mark and improve small-size polish
