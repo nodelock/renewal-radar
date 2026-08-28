@@ -1,0 +1,11 @@
+[build]
+  command = "pnpm build"
+  publish = "dist/public"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Netlify Scheduled Functions use UTC cron. The production adapter should
+# forward the authenticated request to /api/scheduled/check-expiry.
+[functions."check-expiry"]
+  schedule = "0 1 * * *"

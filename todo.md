@@ -1,0 +1,32 @@
+# Project TODO
+
+- [x] Establish original open-source product identity, MIT license, author attribution, and no-copy implementation boundary
+- [x] Define PostgreSQL schema for domains, notification logs, scheduled job runs, and user ownership
+- [x] Add migrations compatible with Neon and Supabase PostgreSQL
+- [x] Implement secure signed session authentication using existing project auth infrastructure
+- [x] Add server-side input validation for domains, dates, thresholds, notes, and HTTPS renewal URLs
+- [x] Add CSRF and Origin/Referer protection for state-changing procedures
+- [x] Add login/API rate limiting and safe error handling
+- [x] Implement domain create, edit, archive, restore, and delete flows
+- [x] Implement notification settings and Telegram Bot integration using server-only secrets
+- [x] Implement daily scheduled endpoint with 30-day and expired-domain reminders
+- [x] Add idempotent notification records to prevent duplicate daily pushes
+- [x] Add scheduled job run records with success/failure status and retry-safe behavior
+- [x] Build original public homepage with open-source value proposition, Fork/Star links, and deployment guidance
+- [x] Build responsive domain asset management dashboard with summary metrics and actionable states
+- [x] Add empty, loading, error, mobile, and accessible interaction states
+- [x] Add Vercel deployment configuration and documentation
+- [x] Add Netlify deployment configuration and documentation
+- [x] Add GitHub Actions quality workflow for typecheck, tests, and build
+- [x] Add README, CONTRIBUTING, SECURITY, CODE_OF_CONDUCT, AI maintenance guide, and environment example documentation
+- [x] Add Vitest coverage for validation and protected procedures
+- [x] Run typecheck, tests, build, and browser visual verification
+- [x] Save final checkpoint and deliver the project version
+- [x] Deliver a working preview URL with public landing page, sign-in entry, and dashboard experience path
+- [x] Verify preview navigation, authentication loading states, and responsive layout before delivery
+- [x] Fix OAuth callback failed error in preview and verify sign-in end to end
+- [x] Enable domain CRUD experience in preview without weakening production PostgreSQL requirements
+- [x] Add development-only preview domain fixtures with no real credentials or production database writes
+- [x] Clarify page 2/404 navigation issue and verify all public links target registered routes
+- [x] Unify the public homepage copy to one language without Chinese-English mixing
+- [x] Set VITE_REPO_URL and all public repository references to https://github.com/nodelock/renewal-radar
