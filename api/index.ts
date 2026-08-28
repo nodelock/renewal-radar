@@ -1,9 +1,9 @@
-import { createApp } from "../server/_core/index.js";
+import { createApiApp } from "../server/_core/api-app.js";
 
-let appPromise: ReturnType<typeof createApp> | undefined;
+let appPromise: ReturnType<typeof createApiApp> | undefined;
 
 export default async function handler(req: any, res: any) {
-  appPromise ??= createApp({ serveFrontend: false });
+  appPromise ??= createApiApp();
   const app = await appPromise;
   return app(req, res);
 }
