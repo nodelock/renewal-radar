@@ -34,11 +34,11 @@ For a private single-owner Vercel deployment, configure the following variables.
 | `TELEGRAM_BOT_TOKEN` | For Telegram alerts | Server-only | Bot token created by BotFather. |
 | `TELEGRAM_CHAT_ID` | For Telegram alerts | Server-only | Telegram chat that receives renewal reminders. |
 | `SESSION_SECRET` | Yes | Server-only | Long random value used to sign HttpOnly login sessions. |
-| `SCHEDULED_TASK_SECRET` | Yes | Server-only | Long random value used to protect the expiry-scan endpoint. |
-| `CRON_SECRET` | For Vercel Cron | Server-only | Use the same value as `SCHEDULED_TASK_SECRET` so Vercel Cron authorization matches the endpoint. |
+| `CRON_SECRET` | Yes for Vercel Cron | Server-only | Long random value used to protect the scheduled expiry scan. |
+| `SCHEDULED_TASK_SECRET` | External scheduler only | Server-only | Optional compatibility secret for GitHub Actions or another scheduler. |
 | `VITE_REPO_URL` | Recommended | Public | Repository link shown by the homepage, normally `https://github.com/nodelock/renewal-radar`. |
 
-`VITE_GITHUB_CLIENT_ID` and `VITE_REPO_URL` are the only public values in this list. The duplicated `GITHUB_CLIENT_ID` variable is not required by the current configuration; use the single `VITE_GITHUB_CLIENT_ID` value instead.
+`VITE_GITHUB_CLIENT_ID` and `VITE_REPO_URL` are public values. The duplicated `GITHUB_CLIENT_ID` variable is not required by the current configuration; use the single `VITE_GITHUB_CLIENT_ID` value instead. `VITE_REPO_URL` is optional because the application has a repository URL fallback.
 
 To enable private single-owner login, set `GITHUB_ALLOWED_USER_ID` to your GitHub numeric user ID, not your username, display name, or email. You can find the number from the `id` field returned by GitHub's authenticated user API or from your GitHub account tooling. If this variable is missing or does not match the authenticated profile, the OAuth callback returns an authorization error and does not create a user or session.
 
@@ -48,7 +48,7 @@ For local or Preview environments, use a separate GitHub OAuth App when possible
 https://renewal-radar-three.vercel.app/api/oauth/callback
 ```
 
-Real secrets should be added separately to the Production, Preview, and Development environments only when those environments are actively used.
+For the smallest personal deployment, the core variables are `DATABASE_URL`, `VITE_GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, `GITHUB_ALLOWED_USER_ID`, `SESSION_SECRET`, and `CRON_SECRET`. Add `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` only when Telegram reminders are enabled. Add `SCHEDULED_TASK_SECRET` only when using an external scheduler instead of Vercel Cron. Real secrets should be added separately to the Production, Preview, and Development environments only when those environments are actively used.
 
 ## Local development
 

@@ -43,8 +43,11 @@
 - [x] Generate a fresh GitHub-upload archive from the latest local source, excluding secrets, build output, and dependency folders
 - [x] Add a Renewal Radar icon consistent with the existing landing page and dashboard visual language
 - [x] Refine the Renewal Radar icon after visual feedback: simplify the mark and improve small-size polish
+- [x] Temporarily restore the earliest generated Renewal Radar icon for user preview before further design changes
+- [ ] Package the current feature-optimized version without further icon changes for GitHub Desktop upload
 - [x] Restrict GitHub OAuth sign-in to an explicit owner GitHub numeric user ID allowlist
 - [x] Simplify Vercel environment variables for private single-owner GitHub deployment
+- [x] Reduce personal self-hosting configuration to the smallest practical environment variable set without weakening private login
 - [x] Document every required Vercel environment variable and private GitHub allowlist setting in README and deployment docs using English-only documentation
 - [x] Replace external icon URLs with a repository-hosted SVG so homepage and favicon work after Vercel deployment
 - [x] Fix Vercel TypeScript errors in cookies, session SDK request headers, and Vite plugin configuration

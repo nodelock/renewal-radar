@@ -33,19 +33,29 @@ DATABASE_URL
 VITE_GITHUB_CLIENT_ID
 GITHUB_CLIENT_SECRET
 GITHUB_ALLOWED_USER_ID
-TELEGRAM_BOT_TOKEN
-TELEGRAM_CHAT_ID
 SESSION_SECRET
-SCHEDULED_TASK_SECRET
 CRON_SECRET
-VITE_REPO_URL
 ```
 
-`CRON_SECRET` should use the same value as `SCHEDULED_TASK_SECRET` when the built-in Vercel Cron is enabled. `VITE_GITHUB_CLIENT_ID` and `VITE_REPO_URL` are public configuration values. Do not add the old duplicate `GITHUB_CLIENT_ID`, and do not create `VITE_GITHUB_CLIENT_SECRET`. No `OWNER_OPEN_ID`, `OAUTH_SERVER_URL`, `VITE_APP_ID`, or Manus-specific variables are required for this GitHub-only deployment.
+Optional Telegram reminder variables:
+
+```text
+TELEGRAM_BOT_TOKEN
+TELEGRAM_CHAT_ID
+```
+
+Optional variables:
+
+```text
+VITE_REPO_URL
+SCHEDULED_TASK_SECRET
+```
+
+For the smallest personal deployment, the core variables are `DATABASE_URL`, `VITE_GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, `GITHUB_ALLOWED_USER_ID`, `SESSION_SECRET`, and `CRON_SECRET`. Add `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` only when Telegram reminders are enabled. Add `SCHEDULED_TASK_SECRET` only when using an external scheduler instead of Vercel Cron. `VITE_GITHUB_CLIENT_ID` and `VITE_REPO_URL` are public configuration values; `VITE_REPO_URL` is optional because the application has a fallback. Do not add the old duplicate `GITHUB_CLIENT_ID`, and do not create `VITE_GITHUB_CLIENT_SECRET`. No `OWNER_OPEN_ID`, `OAUTH_SERVER_URL`, `VITE_APP_ID`, or Manus-specific variables are required for this GitHub-only deployment.
 
 To obtain `GITHUB_ALLOWED_USER_ID`, use the numeric `id` returned for your own account by GitHub's authenticated user API or your GitHub account tooling. Copy only that number into Vercel. If the value is missing, login is intentionally denied.
 
-Vercel Cron can use its built-in `CRON_SECRET` authorization convention; the endpoint also accepts `X-Scheduled-Secret` with `SCHEDULED_TASK_SECRET` for other runners. Do not put secrets in `vercel.json` or the repository.
+Vercel Cron uses its built-in `CRON_SECRET` authorization convention. If you use GitHub Actions or another external runner instead, add `SCHEDULED_TASK_SECRET` and send it as `X-Scheduled-Secret`. Do not put secrets in `vercel.json` or the repository.
 
 ## Netlify
 

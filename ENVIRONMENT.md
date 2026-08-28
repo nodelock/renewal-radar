@@ -17,15 +17,15 @@ Configure this compact set of variables for a Vercel Production deployment:
 | `GITHUB_CLIENT_SECRET` | Yes | Server-only | GitHub OAuth App client secret used for the authorization-code exchange. |
 | `GITHUB_ALLOWED_USER_ID` | Yes | Server-only | Your immutable numeric GitHub user ID. This is the login allowlist. |
 | `SESSION_SECRET` | Yes | Server-only | Long random value used to sign HttpOnly session cookies. |
-| `SCHEDULED_TASK_SECRET` | Yes | Server-only | Long random value accepted by the protected expiry scanner. |
-| `CRON_SECRET` | Vercel Cron | Server-only | Use the same value as `SCHEDULED_TASK_SECRET` for Vercel's built-in scheduled request authorization. |
+| `CRON_SECRET` | Yes for Vercel Cron | Server-only | Long random value used to protect the scheduled expiry scan. |
+| `SCHEDULED_TASK_SECRET` | External scheduler only | Server-only | Optional compatibility secret for GitHub Actions or another scheduler. |
 | `TELEGRAM_BOT_TOKEN` | Telegram alerts | Server-only | Telegram Bot API token created by BotFather. |
 | `TELEGRAM_CHAT_ID` | Telegram alerts | Server-only | Destination chat for renewal reminders. |
 | `VITE_REPO_URL` | Recommended | Public | Repository link shown on the homepage: `https://github.com/nodelock/renewal-radar`. |
 
-`VITE_GITHUB_CLIENT_ID`, `VITE_REPO_URL`, and the GitHub OAuth client ID are public configuration values. Never mark the client secret, database URL, session secret, scheduler secret, or Telegram token with a `VITE_` prefix.
+`VITE_GITHUB_CLIENT_ID` and `VITE_REPO_URL` are public configuration values. `VITE_REPO_URL` is optional because the application has a repository URL fallback. Never mark the client secret, database URL, session secret, scheduler secret, or Telegram token with a `VITE_` prefix.
 
-The old duplicate `GITHUB_CLIENT_ID` variable is not required by the current configuration. Use only `VITE_GITHUB_CLIENT_ID` for the client ID. Do not create `VITE_GITHUB_CLIENT_SECRET`.
+The old duplicate `GITHUB_CLIENT_ID` variable is not required by the current configuration. Use only `VITE_GITHUB_CLIENT_ID` for the client ID. Do not create `VITE_GITHUB_CLIENT_SECRET`. For a minimal deployment, omit `SCHEDULED_TASK_SECRET` when using Vercel Cron and omit the Telegram variables if reminders are not enabled.
 
 ## Finding the allowed GitHub user ID
 
