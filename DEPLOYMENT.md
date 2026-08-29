@@ -24,7 +24,7 @@ This is a breaking identity-provider migration from the earlier preview-only Man
 
 ## Vercel
 
-Import the repository and keep the build command as `pnpm build`. The included `vercel.json` publishes `dist/public` and schedules `/api/scheduled/check-expiry` daily. The `api/index.ts` entry adapts the Express application to a Vercel Function, while `api/oauth/callback.ts` handles the GitHub callback explicitly and `api/[...path].ts` handles the remaining nested routes such as `/api/trpc` and `/api/scheduled/check-expiry`; do not expose `dist/index.js` as the public root.
+Import the repository and keep the build command as `pnpm build`. The included `vercel.json` publishes `dist/public` and schedules `/api/scheduled/check-expiry` daily at 01:00 UTC via a Vercel Cron job. Every `/api/*` path is rewritten by `vercel.json` to a single serverless function, `api/server.ts` (a concrete filename, not a bracket catch-all, is required for reliable deployment in this Vite build); `api/oauth/callback.ts` handles the GitHub OAuth callback explicitly. Do not expose `dist/index.js` as the public root.
 
 Configure these variables for Production:
 
@@ -34,8 +34,9 @@ VITE_GITHUB_CLIENT_ID
 GITHUB_CLIENT_SECRET
 GITHUB_ALLOWED_USERNAME
 SESSION_SECRET
-CRON_SECRET
 ```
+
+`CRON_SECRET` is **not** required for a Vercel Cron deployment (the schedule is authenticated by the built-in `x-vercel-cron-schedule` header); you may omit it.
 
 Optional Telegram reminder variables:
 
@@ -51,11 +52,11 @@ VITE_REPO_URL
 SCHEDULED_TASK_SECRET
 ```
 
-For the smallest personal deployment, the core variables are `DATABASE_URL`, `VITE_GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, `GITHUB_ALLOWED_USERNAME`, `SESSION_SECRET`, and `CRON_SECRET`. Add `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` only when Telegram reminders are enabled. Add `SCHEDULED_TASK_SECRET` only when using an external scheduler instead of Vercel Cron. `VITE_GITHUB_CLIENT_ID` and `VITE_REPO_URL` are public configuration values; `VITE_REPO_URL` is optional because the application has a fallback. Do not add the old duplicate `GITHUB_CLIENT_ID`, and do not create `VITE_GITHUB_CLIENT_SECRET`. No `OWNER_OPEN_ID`, `OAUTH_SERVER_URL`, `VITE_APP_ID`, or Manus-specific variables are required for this GitHub-only deployment.
+For the smallest personal deployment, the core variables are `DATABASE_URL`, `VITE_GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, `GITHUB_ALLOWED_USERNAME`, and `SESSION_SECRET`. Add `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` only when Telegram reminders are enabled. When using Vercel Cron, no schedule secret is required. Add `SCHEDULED_TASK_SECRET` only when using an external scheduler instead of Vercel Cron. `VITE_GITHUB_CLIENT_ID` and `VITE_REPO_URL` are public configuration values; `VITE_REPO_URL` is optional because the application has a fallback. Do not add the old duplicate `GITHUB_CLIENT_ID`, and do not create `VITE_GITHUB_CLIENT_SECRET`. No `OWNER_OPEN_ID`, `OAUTH_SERVER_URL`, `VITE_APP_ID`, or Manus-specific variables are required for this GitHub-only deployment.
 
 To obtain `GITHUB_ALLOWED_USERNAME`, use your GitHub username. Copy only the username into Vercel. If the value is missing, login is intentionally denied.
 
-Vercel Cron uses its built-in `CRON_SECRET` authorization convention. If you use GitHub Actions or another external runner instead, add `SCHEDULED_TASK_SECRET` and send it as `X-Scheduled-Secret`. Do not put secrets in `vercel.json` or the repository.
+Vercel Cron calls the scheduled endpoint automatically and authenticates it via the built-in `x-vercel-cron-schedule` header, so no `CRON_SECRET` is required. If you use GitHub Actions or another external runner instead, add `SCHEDULED_TASK_SECRET` and send it as `X-Scheduled-Secret`. Do not put secrets in `vercel.json` or the repository.
 
 ## Netlify
 
