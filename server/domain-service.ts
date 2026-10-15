@@ -93,7 +93,7 @@ export function formatExpiryMessage(input: { type: "expired" | "renewal-30d"; na
   const title = input.type === "expired" ? "域名已过期" : "域名续期提醒";
   const remaining = input.daysLeft < 0 ? `${Math.abs(input.daysLeft)} 天` : `${input.daysLeft} 天`;
   const renewal = input.renewUrl
-    ? `<a href="${escapeTelegramHtml(input.renewUrl)}">打开续期页面</a>`
+    ? `<a href="${escapeTelegramHtml(input.renewUrl)}">${escapeTelegramHtml(input.renewUrl)}</a>`
     : "未设置";
   // Explicit HTML boundaries prevent Telegram from making the whole line clickable.
   return `${title}\n域名：<a href="https://${escapeTelegramHtml(input.name)}">${domain}</a>\n到期日：${escapeTelegramHtml(input.expiryDate)}\n剩余：${remaining}\n续期：${renewal}`;

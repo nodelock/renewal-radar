@@ -18,10 +18,11 @@ describe("domainInput", () => {
     expect(() => domainInput.parse({ name: "example.com", expiryDate: "2026-12-31", notifyDays: 0 })).toThrow();
   });
 
-  it("links only the domain text and uses a readable renewal link label", () => {
+  it("links only the domain text and displays the renewal URL directly", () => {
     const message = formatExpiryMessage({ type: "renewal-30d", name: "judazi.com", expiryDate: "2026-11-14", daysLeft: 30, renewUrl: "https://www.namesilo.com" });
     expect(message).toContain('域名：<a href="https://judazi.com">judazi.com</a>');
-    expect(message).toContain('续期：<a href="https://www.namesilo.com">打开续期页面</a>');
+    expect(message).toContain('续期：<a href="https://www.namesilo.com">https://www.namesilo.com</a>');
+    expect(message).not.toContain("打开续期页面");
     expect(message).not.toContain("🔗");
     expect(message).not.toContain('域名：<a href="https://judazi.com">域名：');
   });
