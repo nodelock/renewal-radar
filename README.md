@@ -66,9 +66,31 @@ For local GitHub OAuth, create a separate OAuth App and use this callback URL:
 http://localhost:3000/api/oauth/callback
 ```
 
+## Database initialization with Neon
+
+Creating a Neon project and setting `DATABASE_URL` is not enough by itself. Before the first successful sign-in, the empty Neon database must contain the Renewal Radar schema.
+
+1. Create a Neon project and copy its pooled connection string. Keep SSL enabled; Neon connection strings normally include `sslmode=require`.
+2. Open `drizzle/migrations/0000_foamy_sir_ram.sql` in this repository and copy the complete SQL file.
+3. Open the Neon SQL Editor, select the intended database, paste the migration SQL, and run it once. It creates the `users`, `domains`, `notification_logs`, and `job_runs` tables, their enum types, foreign keys, indexes, and notification deduplication constraint.
+4. Add the same connection string to the deployment platform as the server-only `DATABASE_URL` variable. Never commit it or expose it through a `VITE_` variable.
+5. Verify the migration in Neon with:
+
+```sql
+select table_name
+from information_schema.tables
+where table_schema = 'public'
+  and table_name in ('users', 'domains', 'notification_logs', 'job_runs')
+order by table_name;
+```
+
+The query should return all four tables. The first successful GitHub callback writes the authenticated account to `users`, and adding a domain exercises the `domains` table. A database configuration or relation error during login usually means the connection string points to another database or the migration has not been applied.
+
+If `DATABASE_URL` is already exported in a trusted environment, the equivalent CLI command is `pnpm drizzle-kit migrate`. Do not run both methods against a partially applied migration without checking the migration history first.
+
 ## Deployment
 
-Import the GitHub repository into Vercel or Netlify, set the required environment variables, provision a PostgreSQL database, and apply the migration in `drizzle/migrations`. The public frontend is built to `dist/public`.
+Import the GitHub repository into Vercel or Netlify, set the required environment variables, initialize PostgreSQL using the Neon procedure above, and configure the platform's daily scheduled callback. The public frontend is built to `dist/public`.
 
 On Vercel the API is served by a single serverless function: `vercel.json` rewrites every `/api/*` path to `api/server.ts` (the concrete filename, rather than a bracket catch-all, is required for reliable deployment in this Vite build). The included `vercel.json` also schedules the daily expiry scan with a Vercel Cron job:
 

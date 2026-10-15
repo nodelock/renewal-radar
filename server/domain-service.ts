@@ -84,11 +84,26 @@ export async function deleteDomain(ownerId: number, id: string) {
   return row;
 }
 
+function escapeTelegramHtml(value: string) {
+  return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+
+export function formatExpiryMessage(input: { type: "expired" | "renewal-30d"; name: string; expiryDate: string; daysLeft: number; renewUrl?: string | null }) {
+  const domain = escapeTelegramHtml(input.name);
+  const title = input.type === "expired" ? "域名已过期" : "域名续期提醒";
+  const remaining = input.daysLeft < 0 ? `${Math.abs(input.daysLeft)} 天` : `${input.daysLeft} 天`;
+  const renewal = input.renewUrl
+    ? `<a href="${escapeTelegramHtml(input.renewUrl)}">打开续期页面</a>`
+    : "未设置";
+  // Explicit HTML boundaries prevent Telegram from making the whole line clickable.
+  return `${title}\n域名：<a href="https://${escapeTelegramHtml(input.name)}">${domain}</a>\n到期日：${escapeTelegramHtml(input.expiryDate)}\n剩余：${remaining}\n续期：${renewal}`;
+}
+
 async function sendTelegram(text: string) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
   if (!token || !chatId) throw new Error("Telegram密钥未配置");
-  const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ chat_id: chatId, text, disable_web_page_preview: true }) });
+  const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ chat_id: chatId, text, parse_mode: "HTML", disable_web_page_preview: true }) });
   const payload = await response.json() as { ok?: boolean; result?: { message_id?: number }; description?: string };
   if (!response.ok || !payload.ok) throw new Error(payload.description || `Telegram请求失败(${response.status})`);
   return payload.result?.message_id?.toString() ?? null;
@@ -109,7 +124,7 @@ export async function runExpiryCheck() {
     if (daysLeft >= 0 && daysLeft > domain.notifyDays) continue;
     const existing = await db.select({ id: notificationLogs.id, status: notificationLogs.status }).from(notificationLogs).where(and(eq(notificationLogs.domainId, domain.id), eq(notificationLogs.type, type), eq(notificationLogs.targetDate, domain.expiryDate))).limit(1);
     if (existing[0]?.status === "sent") continue;
-    const message = `${type === "expired" ? "域名已过期" : "域名续期提醒"}\n域名：${domain.name}\n到期日：${domain.expiryDate}\n剩余：${daysLeft < 0 ? `${Math.abs(daysLeft)} 天` : `${daysLeft} 天`}\n续期：${domain.renewUrl || "未设置"}`;
+    const message = formatExpiryMessage({ type, name: domain.name, expiryDate: domain.expiryDate, daysLeft, renewUrl: domain.renewUrl });
     try {
       const messageId = await sendTelegram(message);
       if (existing[0]) await db.update(notificationLogs).set({ status: "sent", errorMessage: null, telegramMessageId: messageId, sentAt: new Date() }).where(eq(notificationLogs.id, existing[0].id));

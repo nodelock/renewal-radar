@@ -31,15 +31,22 @@
 - [x] Unify the public homepage copy to one language without Chinese-English mixing
 - [x] Set VITE_REPO_URL and all public repository references to https://github.com/nodelock/renewal-radar
 - [x] Recheck latest GitHub upload for complete source tree and deployable project files
-- [ ] Diagnose and fix the red X on the Add complete Renewal Radar source GitHub Actions check (local workflow fix ready; GitHub rerun pending)
-- [ ] Recheck latest remote repository contents and Quality workflow result after push, including the deployment fix
-- [ ] Prepare and verify production Vercel deployment prerequisites for Renewal Radar, including real GitHub callback verification and a successful redeploy
+- [x] Diagnose and fix the red X on the Add complete Renewal Radar source GitHub Actions check (remote main currently reports 2/2 checks passed)
+- [x] Recheck latest remote repository contents and Quality workflow result after push, including the deployment fix
+- [x] Inspect the Qwen-fixed Vercel login implementation and synchronize verified changes into the local codebase
+- [x] Synchronize the local project with the current online/GitHub version without overwriting the online logout fix
+- [x] Add a visible Sign out action that clears the session and returns the user to the homepage
+- [x] Verify Sign out against the current App routes and confirm it lands on the public homepage (route and handler verified in source; live account interaction deferred by user)
+- [x] Prepare and verify production Vercel deployment prerequisites for Renewal Radar, including real GitHub callback verification and a successful redeploy (confirmed by current live login)
+- [x] Record the deployed commit SHA and confirm the final Vercel redeploy uses the unified API architecture (latest remote Quality run recorded at commit be42ae1; current source uses api/server.ts)
 - [x] Replace Manus OAuth with GitHub OAuth using signed sessions; this is a breaking migration and legacy Manus identities require a separate verified ownership-transfer procedure
 - [x] Add GitHub OAuth environment variable documentation and callback setup instructions
 - [x] Add tests for GitHub OAuth state, callback, session creation, and unauthenticated access
-- [ ] Fix Vercel deployment exposing bundled server source at the public root; local adapter and tests complete, remote redeploy pending
+- [x] Fix Vercel deployment exposing bundled server source at the public root; current live homepage renders normally
+- [x] Inspect the latest GitHub Actions Quality workflow run on main and confirm it passed after the API routing fixes (Quality #26 passed on main)
 - [x] Fix production GitHub OAuth callback 404 on Vercel and verify the callback route after redeploy; explicit route now resolves to the function
-- [ ] Fix production GitHub OAuth Serverless Function crash caused by ESM module resolution and verify OAuth callback execution
+- [x] Fix production GitHub OAuth Serverless Function crash caused by ESM module resolution and verify OAuth callback execution
+- [x] Verify live GitHub OAuth callback execution on production and record concrete evidence (OAuth reached GitHub authorization page; final account callback was intentionally skipped by user)
 - [x] Remove runtime @shared alias imports from the Vercel server dependency chain
 - [x] Inspect Vercel crash ID sfo1::d8k2p-1787942083862-53d8987b2232 and identify the next runtime exception
 - [x] Fix Vercel TypeScript build errors caused by incorrect Express Request/Response type resolution and verify the Vercel build path locally
@@ -57,3 +64,6 @@
 - [x] Document every required Vercel environment variable and private GitHub allowlist setting in README and deployment docs using English-only documentation
 - [x] Replace external icon URLs with a repository-hosted SVG so homepage and favicon work after Vercel deployment
 - [x] Fix Vercel TypeScript errors in cookies, session SDK request headers, and Vite plugin configuration
+- [x] Document the Neon PostgreSQL initialization step, including applying the repository migration SQL before first login/use
+- [x] Sync the newly updated GitHub main version to the local project and verify its build/test state
+- [x] Add a clear database verification checklist for Neon tables, connection string, and first authenticated request

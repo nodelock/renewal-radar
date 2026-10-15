@@ -2,9 +2,27 @@
 
 Repository: https://github.com/nodelock/renewal-radar
 
-## PostgreSQL
+## PostgreSQL with Neon
 
-Create a PostgreSQL database with Neon or Supabase and copy its pooled connection string into the deployment platform as `DATABASE_URL`. The schema is PostgreSQL-specific and does not require a vendor-specific extension. Apply the SQL in `drizzle/migrations/0000_foamy_sir_ram.sql` with the provider SQL editor or `pnpm drizzle-kit migrate` from a trusted environment.
+Creating a Neon project and adding `DATABASE_URL` does not create the application tables. Initialize the database before the first login:
+
+1. Create a Neon project and copy its pooled connection string. Keep SSL enabled; use the connection string with `sslmode=require` when available.
+2. Open `drizzle/migrations/0000_foamy_sir_ram.sql` from this repository and copy the complete file.
+3. Open the Neon SQL Editor, choose the database used by this deployment, paste the migration, and run it once. It creates the four required tables: `users`, `domains`, `notification_logs`, and `job_runs`, plus enum types, foreign keys, indexes, and the notification deduplication index.
+4. Add the connection string to Vercel or Netlify as `DATABASE_URL`. Keep it server-only and never commit it.
+5. Confirm that all four tables exist in Neon:
+
+```sql
+select table_name
+from information_schema.tables
+where table_schema = 'public'
+  and table_name in ('users', 'domains', 'notification_logs', 'job_runs')
+order by table_name;
+```
+
+The first successful GitHub OAuth callback writes the account to `users`; creating a domain verifies access to `domains`. If authentication reports a database configuration or relation error, verify that `DATABASE_URL` points to the same Neon database where the migration was executed.
+
+As an alternative, from a trusted environment with `DATABASE_URL` exported, run `pnpm drizzle-kit migrate`. Do not run a second initialization method blindly after a partial migration; inspect the migration state first.
 
 ## GitHub OAuth
 
